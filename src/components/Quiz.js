@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import Confetti from "react-confetti";
 
-const Quiz = ({ questions }) => {
+const Quiz = ({ questions, onQuizComplete }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [score, setScore] = useState(0);
+  const [quizCompleted, setQuizCompleted] = useState(false);
 
   const handleAnswerSelect = (answer) => {
     setSelectedAnswer(answer);
@@ -16,7 +17,13 @@ const Quiz = ({ questions }) => {
       return;
     }
 
-    if (selectedAnswer === questions[currentQuestionIndex].correctAnswer) {
+    const currentCorrectAnswer =
+      questions[currentQuestionIndex].translations.english.correctAnswer;
+    const isAnswerCorrect = Array.isArray(currentCorrectAnswer)
+      ? currentCorrectAnswer.includes(selectedAnswer)
+      : currentCorrectAnswer === selectedAnswer;
+
+    if (isAnswerCorrect) {
       setScore(score + 1);
       setShowConfetti(true);
       setTimeout(() => {
@@ -25,10 +32,28 @@ const Quiz = ({ questions }) => {
     }
 
     setSelectedAnswer(null);
-    setCurrentQuestionIndex(currentQuestionIndex + 1);
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      setQuizCompleted(true);
+    }
   };
 
-  const currentQuestion = questions[currentQuestionIndex];
+  const currentQuestion = questions[currentQuestionIndex].translations.english;
+
+  if (quizCompleted) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-white shadow-lg rounded-lg px-4 py-6 sm:px-6">
+          <h2 className="text-xl font-medium text-gray-900 mb-2">
+            Quiz Completed!
+          </h2>
+          <p className="text-gray-700">Your Score: {score}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -61,7 +86,6 @@ const Quiz = ({ questions }) => {
             Next
           </button>
         )}
-        <p className="mt-2 text-gray-500">{`Score: ${score}`}</p>
       </div>
     </div>
   );

@@ -3,53 +3,22 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import Quiz from "./components/Quiz";
 import LanguageSelection from "./components/LanguageSelection";
-
-const sampleQuestions = [
-  {
-    question: "What is the first pillar of Islam?",
-    translations: {
-      english: {
-        question: "What is the first pillar of Islam?",
-        answers: [
-          "Salah (Prayer)",
-          "Shahada (Declaration of faith)",
-          "Zakat (Almsgiving)",
-          "Sawm (Fasting)",
-        ],
-      },
-      dutch: {
-        question: "Wat is de eerste pilaar van de islam?",
-        answers: [
-          "Salah (Gebed)",
-          "Shahada (Geloofsbelijdenis)",
-          "Zakat (Aalmoezen geven)",
-          "Sawm (Vasten)",
-        ],
-      },
-      turkish: {
-        question: "İslamın ilk şartı nedir?",
-        answers: [
-          "Salah (Namaz)",
-          "Şehadet (İman etmek)",
-          "Zekat (Sadaka vermek)",
-          "Sawm (Oruç)",
-        ],
-      },
-    },
-    correctAnswer: "Shahada (Declaration of faith)",
-  },
-  // Add more questions here
-];
+import SampleQuestions from "./components/SampleQuestions"; // Import the SampleQuestions
 
 const App = () => {
   const [language, setLanguage] = useState(null);
+  const [quizComplete, setQuizComplete] = useState(false);
 
   const handleLanguageSelect = (selectedLanguage) => {
     setLanguage(selectedLanguage);
   };
 
+  const handleQuizComplete = () => {
+    setQuizComplete(true);
+  };
+
   const translatedQuestions = language
-    ? sampleQuestions.map((question) => ({
+    ? SampleQuestions.map((question) => ({
         ...question,
         question: question.translations[language].question,
         answers: question.translations[language].answers,
@@ -59,8 +28,13 @@ const App = () => {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="container mx-auto p-4 max-w-md">
-        {language ? (
-          <Quiz questions={translatedQuestions} />
+        {quizComplete ? (
+          <div>Quiz Completed! Thank you for participating.</div>
+        ) : language ? (
+          <Quiz
+            questions={translatedQuestions}
+            onQuizComplete={handleQuizComplete}
+          />
         ) : (
           <LanguageSelection
             languages={["english", "dutch", "turkish"]}

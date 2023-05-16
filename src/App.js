@@ -1,25 +1,55 @@
-import logo from './logo.svg';
-import './App.css';
+const App = () => {
+  const [language, setLanguage] = useState(null);
+  const [quizStarted, setQuizStarted] = useState(false);
+  const [quizCompleted, setQuizCompleted] = useState(false);
 
-function App() {
+  const handleLanguageSelect = (selectedLanguage) => {
+    setLanguage(selectedLanguage);
+    setQuizStarted(false);
+    setQuizCompleted(false);
+  };
+
+  const handleQuizStart = () => {
+    setQuizStarted(true);
+  };
+
+  const handleQuizComplete = () => {
+    setQuizCompleted(true);
+  };
+
+  const translatedQuestions = language
+    ? SampleQuestions.map((question) => ({
+        ...question,
+        question: question.translations[language].question,
+        answers: question.translations[language].answers,
+      }))
+    : [];
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="container mx-auto p-4 max-w-md">
+        {quizCompleted ? (
+          <div>Quiz Completed! Thank you for participating.</div>
+        ) : quizStarted ? (
+          <Quiz
+            questions={translatedQuestions}
+            onQuizComplete={handleQuizComplete}
+          />
+        ) : (
+          <div>
+            <LanguageSelection
+              languages={["english", "dutch", "turkish"]}
+              onLanguageSelect={handleLanguageSelect}
+            />
+            {language && (
+              <div>
+                <Rules language={language} onStartQuiz={handleQuizStart} />
+                <button onClick={handleQuizStart}>Start Quiz</button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
-}
-
-export default App;
+};
